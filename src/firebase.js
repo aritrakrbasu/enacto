@@ -4,13 +4,13 @@ import "firebase/storage"
 import "firebase/auth"
 
 const app = firebase.initializeApp({
-  apiKey: "AIzaSyC_deu2hHu7zv5j5O08mBvCEVJc1KOjUNw",
-  authDomain: "enacto.firebaseapp.com",
-  projectId: "enacto",
-  storageBucket: "enacto.appspot.com",
-  messagingSenderId: "994032242386",
-  appId: "1:994032242386:web:31740bb14a37eef15ea70b",
-  measurementId: "G-BEHDSWSY6R"
+  apiKey: "AIzaSyDN7hp_BesHvWIcRrmaqMUbNoLdNEBxDBw",
+  authDomain: "enacto-app.firebaseapp.com",
+  projectId: "enacto-app",
+  storageBucket: "enacto-app.appspot.com",
+  messagingSenderId: "829579513909",
+  appId: "1:829579513909:web:ac21256cd160a9cc65e17c",
+  measurementId: "G-3M6XRMZJC4"
 })
 
 export const auth = app.auth()

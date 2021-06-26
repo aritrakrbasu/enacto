@@ -32,8 +32,7 @@ function Sidebar() {
     }, [])
     return (
         <div className="sidebar">
-            <div className="brand-sidebar">Activity to hiring</div>
-            <div className="brand-sidebar-verticle">Actohire</div>
+            <div className="brand-sidebar-verticle">Enacto</div>
             <ul className="sidebar-container">
                 <NavLink activeClassName="selected-nav" to="/dashboard"><li>
                     <FontAwesomeIcon icon={faTachometerAlt}/> 

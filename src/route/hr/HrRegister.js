@@ -79,7 +79,7 @@ function HrRegister() {
                     <Row>
                         <Col lg={5} className="login-pattern-container">
                             <div className="login-description">
-                                <div className="brand">B-Plan</div>
+                                <div className="brand">Enacto</div>
                                 <h1>Welcome to your world of success !!</h1>
                                 <p>Join our network to hire the best talents from the institutions, who can be an asset for your organization. </p>
                                 <div className="login-down">
