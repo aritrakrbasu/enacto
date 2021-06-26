@@ -4,17 +4,19 @@ import React, { useEffect, useRef, useState } from 'react'
 import { Button, Col, Container, Form, Row, Spinner } from 'react-bootstrap'
 import { Link, useHistory } from 'react-router-dom'
 import { useAuth } from '../../context/AuthProvider';
-import './styles/login.css'
+import '../student/styles/login.css'
 
-function Login() {
+function Hrlogin() {
 
-    const[loading,setLoading]=useState(false)
-    const[error,setError]=useState(false)
+    const[loading,setLoading]= useState(false)
+    const[error,setError]= useState(false)
+
     const emailRef = useRef()
     const passwordRef = useRef()
-    const history= useHistory()
 
-    const {currentUser,login}=useAuth()
+    const history= useHistory()
+    
+    const {currentUser,hrLogin}=useAuth()
 
     function handleLogin(e)
     {
@@ -27,7 +29,7 @@ function Login() {
             return
         }else
         {
-            login(emailRef.current.value,passwordRef.current.value).then(()=>{})
+            hrLogin(emailRef.current.value,passwordRef.current.value).then(()=>{})
             .catch((error)=>{
                 setError(error.message)
                 setLoading(false)
@@ -39,7 +41,7 @@ function Login() {
     useEffect(()=>{
         if(currentUser && currentUser.uid)
         {
-            history.push("/dashboard")
+            history.push("/hr-dashboard")
         }
     },[currentUser])
 
@@ -51,11 +53,10 @@ function Login() {
                         <div className="login-description">
                             <div className="brand">Enacto</div>
                             <h1>Welcome to your world of success !!</h1>
-                            <p>Join our network to keep track of your fellow classmates and let them know who you are ! . Recruiters always have their eyes on you :) </p>
-
+                            <p>Join our network to hire the best talents from the institutions, who can be an asset for your organization. </p>
                             <div className="login-down">
                                 <h3>Don't have an account ?</h3>
-                                <Link to="/register">
+                                <Link to="/hr-register">
                                     Sign Up Now {' '}
                                     <FontAwesomeIcon icon={faArrowRight} />
                                 </Link>
@@ -68,18 +69,17 @@ function Login() {
                         <h2>Login</h2>
                         {error && <div className="error">{error}</div>}
                         </div>
-                        <Form className="login-form" onSubmit={handleLogin}>
-                            <Form.Group controlId="formBasicEmail">
-                                <Form.Label>Email address</Form.Label>
-                                <Form.Control type="email" placeholder="Enter email" ref={emailRef} required />
+                        <Form onSubmit={handleLogin} className="login-form">
+                            <Form.Group controlId="loginMail">
+                                <Form.Label> Email</Form.Label>
+                                <Form.Control type="text" placeholder="Enter your registered email" ref={emailRef} />
                             </Form.Group>
-
-                            <Form.Group controlId="formBasicPassword">
+                            <Form.Group controlId="loginPassword">
                                 <Form.Label>Password</Form.Label>
-                                <Form.Control type="password" placeholder="Password" ref={passwordRef} required/>
+                                <Form.Control type="password" placeholder="Enter your Password" ref={passwordRef} />
                             </Form.Group>
-                            <Button variant="primary" disabled={loading} className="theme-btn" type="submit">
-                            {loading?(
+                            <Button variant="primary" disabled ={loading} className="theme-btn" type="submit">
+                                        {loading?(
                                             <Spinner animation="border" role="status">
                                             <span className="sr-only">Loading...</span>
                                           </Spinner>):(
@@ -87,7 +87,7 @@ function Login() {
                                             Take me in <FontAwesomeIcon icon={faAngleRight}/>
                                             </>
                                         )}
-                            </Button>
+                            </Button>            
                         </Form>
                         </div>
                     </Col>
@@ -97,4 +97,4 @@ function Login() {
     )
 }
 
-export default Login
+export default Hrlogin

@@ -126,7 +126,7 @@ function Register() {
             <Row>
                 <Col lg={5} className="login-pattern-container">
                     <div className="login-description">
-                        <div className="brand">B-Plan</div>
+                        <div className="brand">Enacto</div>
                         <h1>Welcome to your world of success !!</h1>
                         <p>Join our network to keep track of your fellow classmates and let them know who you are ! . Recruiters always have their eyes on you :) </p>
 

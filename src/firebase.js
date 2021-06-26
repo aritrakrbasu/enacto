@@ -5,9 +5,9 @@ import "firebase/auth"
 
 const app = firebase.initializeApp({
   apiKey: "AIzaSyC_deu2hHu7zv5j5O08mBvCEVJc1KOjUNw",
-  authDomain: "acttohire.firebaseapp.com",
-  projectId: "acttohire",
-  storageBucket: "acttohire.appspot.com",
+  authDomain: "enacto.firebaseapp.com",
+  projectId: "enacto",
+  storageBucket: "enacto.appspot.com",
   messagingSenderId: "994032242386",
   appId: "1:994032242386:web:31740bb14a37eef15ea70b",
   measurementId: "G-BEHDSWSY6R"
