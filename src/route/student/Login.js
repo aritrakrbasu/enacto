@@ -5,43 +5,50 @@ import { Button, Col, Container, Form, Row, Spinner } from 'react-bootstrap'
 import { Link, useHistory } from 'react-router-dom'
 import { useAuth } from '../../context/AuthProvider';
 import './styles/login.css'
+import Sawo from "sawo"
+
 
 function Login() {
 
-    const[loading,setLoading]=useState(false)
     const[error,setError]=useState(false)
-    const emailRef = useRef()
-    const passwordRef = useRef()
+
     const history= useHistory()
 
     const {currentUser,login}=useAuth()
 
-    function handleLogin(e)
+    function handleLogin(payload)
     {
-        e.preventDefault()
-        setLoading(true)
-        if(passwordRef.current.value.length < 6)
-        {
-            setError("Password must be greater than 5 characters")
-            setLoading(false)
-            return
-        }else
-        {
-            login(emailRef.current.value,passwordRef.current.value).then(()=>{})
+
+        setError()     
+            login(payload)
             .catch((error)=>{
-                setError(error.message)
-                setLoading(false)
-            })
-        }
+                setError(error)     
+                window.sawo.showForm()       
+        })
 
     }
 
     useEffect(()=>{
-        if(currentUser && currentUser.uid)
+        if(currentUser && currentUser.uid && currentUser.isStudent)
         {
             history.push("/dashboard")
         }
     },[currentUser])
+
+
+    useEffect(()=>{
+        var config = {
+            containerID: "sawo-container",
+            identifierType: "phone_number_sms",
+            apiKey: "8d2e9e65-a433-42bc-b17c-e5d9e454035e",
+            onSuccess: (payload) => {
+                handleLogin(payload)
+            },
+        };
+
+        window.sawo = new Sawo(config)
+        window.sawo.showForm()
+    },[])
 
     return (
         <div className="login-container">
@@ -68,27 +75,10 @@ function Login() {
                         <h2>Login</h2>
                         {error && <div className="error">{error}</div>}
                         </div>
-                        <Form className="login-form" onSubmit={handleLogin}>
-                            <Form.Group controlId="formBasicEmail">
-                                <Form.Label>Email address</Form.Label>
-                                <Form.Control type="email" placeholder="Enter email" ref={emailRef} required />
-                            </Form.Group>
+                        
+                        <div id="sawo-container" className="login-sawo-container">
+                        </div>
 
-                            <Form.Group controlId="formBasicPassword">
-                                <Form.Label>Password</Form.Label>
-                                <Form.Control type="password" placeholder="Password" ref={passwordRef} required/>
-                            </Form.Group>
-                            <Button variant="primary" disabled={loading} className="theme-btn" type="submit">
-                            {loading?(
-                                            <Spinner animation="border" role="status">
-                                            <span className="sr-only">Loading...</span>
-                                          </Spinner>):(
-                                            <>
-                                            Take me in <FontAwesomeIcon icon={faAngleRight}/>
-                                            </>
-                                        )}
-                            </Button>
-                        </Form>
                         </div>
                     </Col>
                 </Row>

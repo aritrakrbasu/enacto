@@ -324,7 +324,7 @@ function Stats() {
           'rgb(163, 2, 96)',
         ]
 
-        topicsList.forEach((topic)=>{
+        topicsList?.forEach((topic)=>{
           var data = new Array(12).fill(0)
 
           for (var month = 1 ; month <= 12 ; month++)

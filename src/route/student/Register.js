@@ -6,6 +6,8 @@ import { Link, useHistory } from 'react-router-dom'
 import { useAuth } from '../../context/AuthProvider';
 import { db } from '../../firebase';
 import './styles/login.css'
+import Sawo from "sawo"
+
 function Register() {
 
     const [step,setStep]=useState(1)
@@ -17,7 +19,8 @@ function Register() {
     const [password,setPassword]=useState()
     const [email,setEmail]=useState()
 
-
+    const [showForm, setShowForm] = useState(false)
+    const [payloads , setPayload] = useState()
 
     const CollegeRef = useRef()
     const rollRef = useRef()
@@ -83,12 +86,10 @@ function Register() {
         else
         {
             var collegeId = collegeList.filter(college=>college.displayName === CollegeRef.current.value)
-            register(email,password,name,CollegeRef.current.value,rollRef.current.value,univRollRef.current.value,graduationDateRef.current.value,sex,collegeId[0].id).then(()=>{
-                        }).then(()=>{
-                           history.push("/dashboard")
-                        })
+            register(email,password,name,CollegeRef.current.value,rollRef.current.value,univRollRef.current.value,graduationDateRef.current.value,sex,collegeId[0].id,payloads)
                         .catch((error)=>{
                 setError(error.message)
+                setLoading(false)
             })
         }
     }
@@ -99,7 +100,7 @@ function Register() {
         {
             history.push("/dashboard")
         }
-    },[])
+    },[currentUser])
     
     useEffect(() => {
         var unsubscribe = db.collection("users").where("isCollege","==",true).onSnapshot((docs)=>{
@@ -119,6 +120,24 @@ function Register() {
         })
         return unsubscribe
     }, [])
+
+
+    useEffect(()=>{
+        var config = {
+            containerID: "sawo-container",
+            identifierType: "phone_number_sms",
+            apiKey: "8d2e9e65-a433-42bc-b17c-e5d9e454035e",
+            onSuccess: (payload) => {
+                setShowForm(true)
+                setPayload(payload)
+            },
+        };
+
+        let sawo = new Sawo(config)
+        sawo.showForm()
+
+    },[])
+
 
     return (
         <div className="login-container">
@@ -142,14 +161,23 @@ function Register() {
                 <Col lg={7} className="d-flex align-items-center justify-content-center">
                     <div className="login-form-container">
                     <div className="login-form-top">
-                    <h2>Sign Up</h2>
+                    {!showForm && <h2>Sign Up</h2> }
+                    {showForm && <h2>Onboard</h2> }
                     {error && <div className="error">{error}</div>}
                     </div>
-                    <ul className="progress-holder">
-                        <li className={step===1 && "bg-theme text-light"}>1</li>
-                        <li className={step===2 && "bg-theme text-light"}>2</li>
-                    </ul>
-                    <Form className="login-form" onSubmit={handleRegister}>
+                    
+                    {!showForm && (
+                        <div id="sawo-container" style={{height: "300px", width: "500px"}}></div>
+                    )}
+
+
+                    {showForm && (
+                        <>
+                        <ul className="progress-holder">
+                            <li className={step===1 && "bg-theme text-light"}>1</li>
+                            <li className={step===2 && "bg-theme text-light"}>2</li>
+                        </ul>
+                        <Form className="login-form" onSubmit={handleRegister}>
                         {step===1 && (
                             <>
                                 <Form.Group controlId="formname">
@@ -226,6 +254,8 @@ function Register() {
                             </>
                         )}
                     </Form>
+                    </>
+                    )}
                     </div>
                 </Col>
             </Row>

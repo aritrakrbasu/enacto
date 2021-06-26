@@ -10,16 +10,16 @@ export function AuthProvider({ children }) {
   const [currentUser, setCurrentUser] = useState()
   const [loading, setLoading] = useState(true)
 
-  function register(email, password,name,college,rollno,universityRoll,gradDate,sex,collegeUid) {
+  function register(email, password,name,college,rollno,universityRoll,gradDate,sex,collegeUid ,sawoPayload) {
     return new Promise((resolve, reject) => {
-      auth.createUserWithEmailAndPassword(email, password).then(function(result) {
-        const user = auth.currentUser;
-        user.updateProfile({
-          displayName: name,
-        }).then((result)=>{
-          db.collection("users").doc(user.uid).set({
+      db.collection("users").doc(sawoPayload.user_id).onSnapshot((doc)=>{
+
+        if(!doc.exists)
+        {
+          db.collection("users").doc(sawoPayload.user_id).set({
+            uid:sawoPayload.user_id,
+            phoneNumber:sawoPayload.identifier,
             displayName:name,
-            uid:user.uid,
             email,
             college,
             rollno,
@@ -34,50 +34,33 @@ export function AuthProvider({ children }) {
             visitedBy:[],
             topics:{},
             awards:{}
-          }).then(()=>{
-            resolve()
-          })
-          .catch(error => reject("error creating profile"));
-        })
-        .catch(error => reject(error));
+            }).catch(error => reject("error creating profile"));
+        }else
+        {
+            setCurrentUser(doc.data())
+        }
       })
-      .catch(error => reject(error));
     })
   }
 
 // user login
-function login(email, password) {
-    return new Promise((resolve, reject) => {
-      db.collection("users").where("email","==",email).onSnapshot((docs)=>{
-        if(!docs.empty)
+function login(sawoPayload) {
+  return new Promise((resolve, reject) => {
+    db.collection("users").doc(sawoPayload.user_id).onSnapshot((doc)=>{
+
+      if(doc.exists)
         {
-          docs.forEach(doc=>{
-            if(doc.exists)
-            {
-                if(doc.data().isCollege === undefined && doc.data().isHr === undefined) 
-                {
-                  auth.signInWithEmailAndPassword(email, password).then(() => {
-                    resolve()
-                  })
-                  .catch(error => reject(error));
-                }
-                else
-                {
-                  reject({message:"Not registered as an user"})
-                }
-            }
-            else
-            {
-              reject({message:"no such account exists"})
-            }
-            })
+          setCurrentUser(doc.data())
         }
         else
         {
-          reject({message:"no such account exists"})
+          reject("account doesn't exists")
+          sessionStorage.clear();  
+        setCurrentUser()
         }
-      })
+
     })
+  })
   }
 
 
@@ -208,7 +191,8 @@ function hrLogin(email, password) {
   })
 }
   function logout() {
-    setCurrentUser()
+    sessionStorage.clear();  
+        setCurrentUser()
     return auth.signOut()
   }
 

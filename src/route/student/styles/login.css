@@ -12,6 +12,7 @@
     border-radius: 30px;
     overflow: hidden;
     box-shadow: 0px 0px 50px  rgba(0,0,0,0.6);
+    position: relative;
 }
 .login-down
 {
@@ -140,7 +141,27 @@
     background-color: #0D1238 !important;
     color:#fff !important
 }
+.login-sawo-container
+{
+    height:200px;
+    position: relative;
+}
+.textinput-input 
+{
+    border: 2px solid #0D1238 !important
+}
+
 @media all and (max-width: 480px) {
+
+    .login-sawo-container
+    {
+        width:100%
+    }
+    .login-form-container
+    {
+        width: 90%;
+    }
+
     .login-down
     {
         margin-top: 10px;
