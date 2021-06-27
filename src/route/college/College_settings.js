@@ -54,6 +54,12 @@ function College_settings() {
                   <Row noGutters>
                       <Col lg={12} className="p-0">
                       <Form onSubmit={handleRegister1}  className="w-50">
+                            <Form.Group controlId="formBasicPhonenumber">
+                                <Form.Label>Registered Number</Form.Label>
+                                <Form.Control type="text" placeholder="Enter Phone number" defaultValue={currentUser.phoneNumber} disabled/>
+                                <Form.Text className="text-muted">
+                                </Form.Text>
+                            </Form.Group>
                             <Form.Group controlId="formBasicName" >
                                 <Form.Label>College Name</Form.Label>
                                 <Form.Control type="text" placeholder="Enter name" defaultValue={currentUser.displayName} ref={College_nameRef} required/>

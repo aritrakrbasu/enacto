@@ -10,7 +10,7 @@ export function AuthProvider({ children }) {
   const [currentUser, setCurrentUser] = useState()
   const [loading, setLoading] = useState(true)
 
-  function register(email, password,name,college,rollno,universityRoll,gradDate,sex,collegeUid ,sawoPayload) {
+  function register(email,name,college,rollno,universityRoll,gradDate,sex,collegeUid ,sawoPayload) {
     return new Promise((resolve, reject) => {
       db.collection("users").doc(sawoPayload.user_id).onSnapshot((doc)=>{
 
@@ -50,7 +50,16 @@ function login(sawoPayload) {
 
       if(doc.exists)
         {
-          setCurrentUser(doc.data())
+          if(doc.data().isStudent)
+          {
+            setCurrentUser(doc.data())
+          }
+          else
+          {
+            reject("account doesn't exists")
+            sessionStorage.clear();  
+            setCurrentUser()
+          }
         }
         else
         {
@@ -64,16 +73,85 @@ function login(sawoPayload) {
   }
 
 
-  function hrRegister(email, password,name,company,country,state,contact) {
+  //college registration
+  function  College_registration(name_clg,email,contact,clg_address,extras,sawoPayload) {
+
     return new Promise((resolve, reject) => {
-      auth.createUserWithEmailAndPassword(email, password).then(function(result) {
-        const user = auth.currentUser;
-        user.updateProfile({
-          displayName: name,
-        }).then((result)=>{
-          db.collection("users").doc(user.uid).set({
+      db.collection("users").doc(sawoPayload.user_id).onSnapshot((doc)=>{
+
+        if(!doc.exists)
+        {
+          db.collection("users").doc(sawoPayload.user_id).set({
+            uid:sawoPayload.user_id,
+            phoneNumber:sawoPayload.identifier,
+            displayName:name_clg,
+            email,
+            contact,
+            clg_address,
+            extras,
+            isCollege:true,
+            }).catch(error => reject("error creating profile"));
+        }else
+        {
+            if(doc.data().isCollege)
+            setCurrentUser(doc.data())
+            else
+            {
+              sessionStorage.clear();  
+              setCurrentUser()
+              reject("Phone number already exists")
+            }
+        }
+      })
+    })
+  }
+
+
+// college login
+function collegeLogin(sawoPayload) {
+  return new Promise((resolve, reject) => {
+    db.collection("users").doc(sawoPayload.user_id).onSnapshot((doc)=>{
+
+      if(doc.exists)
+        {
+          if(doc.data().isCollege)
+          {
+            setCurrentUser(doc.data())
+          }
+          else
+          {
+            reject("account doesn't exists")
+            sessionStorage.clear();  
+            setCurrentUser()
+          }
+        }
+        else
+        {
+          reject("account doesn't exists")
+          sessionStorage.clear();  
+          setCurrentUser()
+        }
+
+    })
+  })
+  }
+
+
+  
+//HR Register
+  function hrRegister(email,name,company,country,state,contact,sawoPayload) {
+
+
+
+    return new Promise((resolve, reject) => {
+      db.collection("users").doc(sawoPayload.user_id).onSnapshot((doc)=>{
+
+        if(!doc.exists)
+        {
+          db.collection("users").doc(sawoPayload.user_id).set({
             displayName:name,
-            uid:user.uid,
+            uid:sawoPayload.user_id,
+            phoneNumber:sawoPayload.identifier,
             email,
             company,
             country,
@@ -83,112 +161,52 @@ function login(sawoPayload) {
             isHr:true,
             quota:0,
             sentOffers: []
-          }).then(()=>{
-            resolve()
-          })
-          .catch(error => reject("error creating profile"));
-        })
-        .catch(error => reject(error));
+            }).catch(error => reject("error creating profile"));
+        }else
+        {
+            if(doc.data().isHr)
+            setCurrentUser(doc.data())
+            else
+            {
+              sessionStorage.clear();  
+              setCurrentUser()
+              reject("Phone number already exists")
+            }
+        }
       })
-      .catch(error => reject(error));
-    })
-  }
-  function  College_registration(name_clg,email, password,contact,clg_address,extras) {
-    return new Promise((resolve, reject) => {
-      auth.createUserWithEmailAndPassword(email, password).then(function(result) {
-        const user = auth.currentUser;
-        user.updateProfile({
-          displayName: name_clg,
-        }).then((result)=>{
-          db.collection("users").doc(user.uid).set({
-            displayName:name_clg,
-            uid:user.uid,
-            email,
-            contact,
-            clg_address,
-            extras,
-            isCollege:true,
-          }).then(()=>{
-        
-            resolve()
-
-          })
-          .catch(error => reject("error creating profile"));
-        })
-        .catch(error => reject(error));
-      })
-      .catch(error => reject(error));
     })
   }
 
-// college login
-function collegeLogin(email, password) {
-  return new Promise((resolve, reject) => {
-    db.collection("users").where("email","==",email).onSnapshot((docs)=>{
-      if(!docs.empty)
-      {
-        docs.forEach(doc=>{
-          if(doc.exists)
-          {
-              if(doc.data().isStudent === undefined && doc.data().isHr === undefined) 
-              {
-                auth.signInWithEmailAndPassword(email, password).then(() => {
-                  resolve()
-                })
-                .catch(error => reject(error));
-              }
-              else
-              {
-                reject({message:"Not registered as an user"})
-              }
-          }
-          else
-          {
-            reject({message:"no such account exists"})
-          }
-          })
-      }
-      else
-      {
-        reject({message:"no such account exists"})
-      }
-    })
-  })
-}
 
 // HR login
-function hrLogin(email, password) {
+function hrLogin(sawoPayload) {
+
   return new Promise((resolve, reject) => {
-    db.collection("users").where("email","==",email).onSnapshot((docs)=>{
-      if(!docs.empty)
-      {
-        docs.forEach(doc=>{
-          if(doc.exists)
+    db.collection("users").doc(sawoPayload.user_id).onSnapshot((doc)=>{
+
+      if(doc.exists)
+        {
+          if(doc.data().isHr)
           {
-              if(doc.data().isCollege === undefined && doc.data().isStudent === undefined) 
-              {
-                auth.signInWithEmailAndPassword(email, password).then(() => {
-                  resolve()
-                })
-                .catch(error => reject(error));
-              }
-              else
-              {
-                reject({message:"Not registered as an user"})
-              }
+            setCurrentUser(doc.data())
           }
           else
           {
-            reject({message:"no such account exists"})
+            reject("account doesn't exists")
+            sessionStorage.clear();  
+            setCurrentUser()
           }
-          })
-      }
-      else
-      {
-        reject({message:"no such account exists"})
-      }
+        }
+        else
+        {
+          reject("account doesn't exists")
+          sessionStorage.clear();  
+          setCurrentUser()
+        }
+
     })
   })
+
 }
   function logout() {
     sessionStorage.clear();  

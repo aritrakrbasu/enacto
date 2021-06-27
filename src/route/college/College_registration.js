@@ -5,6 +5,7 @@ import { Button, Col, Container, Form, Row, Spinner } from 'react-bootstrap'
 import { Link, useHistory } from 'react-router-dom'
 import { useAuth } from '../../context/AuthProvider';
 import '../student/styles/login.css'
+import Sawo from "sawo"
 
 function College_registration() {
 
@@ -13,8 +14,9 @@ function College_registration() {
 
     const[error,setError]=useState(false)
     const [clg_name,setName]=useState()
-    const [password,setPassword]=useState()
     const [email,setEmail]=useState()
+    const [payloads , setPayload] = useState()
+    const [showForm, setShowForm] = useState(false)
 
     const clg_addressRef= useRef()
     const contactRef= useRef()
@@ -40,12 +42,6 @@ function College_registration() {
             setLoading(false)
             return
         }
-        else if(!password)
-        {
-            setError("Please enter your Password")
-            setLoading(false)
-            return
-        }
         else if(!contactRef.current.value)
         {
             setError("Please enter your contact number")
@@ -66,20 +62,40 @@ function College_registration() {
         }
         else
         {
-            College_registration(clg_name,email,password,contactRef.current.value, clg_addressRef.current.value,extrasRef.current.value)
-            .then(()=>history.push("/college-subscription")).catch((error)=>{
-                setError(error.message)
+            College_registration(clg_name,email,contactRef.current.value, clg_addressRef.current.value,extrasRef.current.value,payloads)
+            .catch((error)=>{
+                setError(error)
+                setShowForm(false)
                 setLoading(false)
+                window.sawo.showForm()
             })
         }
     }
     
     useEffect(()=>{
-        if(currentUser && currentUser.uid)
+        if(currentUser && currentUser.uid && currentUser.isCollege)
         {
             history.push("/college-subscription")
         }
     },[currentUser])
+
+
+    useEffect(()=>{
+        var config = {
+            containerID: "sawo-container",
+            identifierType: "phone_number_sms",
+            apiKey: "8d2e9e65-a433-42bc-b17c-e5d9e454035e",
+            onSuccess: (payload) => {
+                setShowForm(true)
+                setPayload(payload)
+            },
+        };
+
+        window.sawo = new Sawo(config)
+        window.sawo.showForm()
+
+    },[])
+
     return (
             <div className="login-container">
                 <Container className="login-holder bg-white">
@@ -101,9 +117,18 @@ function College_registration() {
                         <Col lg={7} className="d-flex align-items-center justify-content-center">
                             <div className="login-form-container">
                             <div className="login-form-top">
-                            <h2>Register</h2>
+                            {!showForm && <h2>Sign Up</h2> }
+                            {showForm && <h2>Onboard</h2> }
                             {error && <div className="error">{error}</div>}
                             </div>
+
+                            {!showForm && (
+                        <div id="sawo-container" style={{height: "300px", width: "500px"}}></div>
+                    )}
+
+
+                            {showForm && (
+                                <>
                         <ul className="progress-holder">
                             <li className={step===1 ? ("bg-theme text-light"):("pointer")} onClick={()=>{setStep(1)}} >1</li>
                             <li className={step===2 ?("bg-theme text-light"):("pointer")} onClick={()=>{setStep(2)}}>2</li>
@@ -117,11 +142,7 @@ function College_registration() {
                                     </Form.Group>
                                     <Form.Group controlId="register_email">
                                         <Form.Label>Email</Form.Label>
-                                        <Form.Control type="email" defaultValue={email} placeholder="Enter your email" onChange={(e)=>{setEmail(e.target.value)}}required/>
-                                    </Form.Group>
-                                    <Form.Group controlId="register_password">
-                                        <Form.Label> Password </Form.Label>
-                                        <Form.Control type="password" defaultValue={password} placeholder="Enter password" onChange={(e)=> {setPassword(e.target.value)}} required/>
+                                        <Form.Control type="email" defaultValue={email} placeholder="Enter your email" onChange={(e)=>{setEmail(e.target.value)}} required/>
                                     </Form.Group>
                                     <Button variant="primary" className="theme-btn" onClick={()=>{setStep(2)}}>
                                        Next <FontAwesomeIcon icon={faAngleRight}/>
@@ -130,45 +151,47 @@ function College_registration() {
                             )
                             }
                             {step===2 && (
-                            <>
-                                <Form.Group controlId="register_number">
-                                    <Form.Label> Contact Number</Form.Label>
-                                    <Form.Control type="number" placeholder="Enter your phone number" ref={contactRef} required />
-                                </Form.Group>
-                                <Form.Group controlId="register_address">
-                                    <Form.Label>College Address</Form.Label>
-                                    <Form.Control type="text" placeholder="College Address" ref={clg_addressRef} required/>
-                                </Form.Group>
-                                <Form.Group controlId="register_extras">
-                                    <Form.Label>Extras</Form.Label>
-                                    <Form.Control type="text" placeholder="Extras" ref={extrasRef} required/>
-                                </Form.Group>
-                                <br></br>
-                                <Container fluid>
-                                <Row>
-                                    <Col lg={6}>
-                                    <Button variant="light" className="w-100" onClick={()=>{setStep(1)}}>
-                                    <FontAwesomeIcon icon={faAngleLeft}/> {' '} Prev 
-                                    </Button>
-                                    </Col>
-                                    <Col lg={6}>
-                                    <Button variant="primary" disabled ={loading} className="theme-btn" type="submit">
-                                        {loading?(
-                                            <Spinner animation="border" role="status">
-                                            <span className="sr-only">Loading...</span>
-                                          </Spinner>):(
                                             <>
-                                            Take me in <FontAwesomeIcon icon={faAngleRight}/>
+                                                <Form.Group controlId="register_number">
+                                                    <Form.Label> Contact Number</Form.Label>
+                                                    <Form.Control type="number" placeholder="Enter your phone number" ref={contactRef} required />
+                                                </Form.Group>
+                                                <Form.Group controlId="register_address">
+                                                    <Form.Label>College Address</Form.Label>
+                                                    <Form.Control type="text" placeholder="College Address" ref={clg_addressRef} required/>
+                                                </Form.Group>
+                                                <Form.Group controlId="register_extras">
+                                                    <Form.Label>Extras</Form.Label>
+                                                    <Form.Control type="text" placeholder="Extras" ref={extrasRef} required/>
+                                                </Form.Group>
+                                                <br></br>
+                                                <Container fluid>
+                                                <Row>
+                                                    <Col lg={6}>
+                                                    <Button variant="light" className="w-100" onClick={()=>{setStep(1)}}>
+                                                    <FontAwesomeIcon icon={faAngleLeft}/> {' '} Prev 
+                                                    </Button>
+                                                    </Col>
+                                                    <Col lg={6}>
+                                                    <Button variant="primary" disabled ={loading} className="theme-btn" type="submit">
+                                                        {loading?(
+                                                            <Spinner animation="border" role="status">
+                                                            <span className="sr-only">Loading...</span>
+                                                        </Spinner>):(
+                                                            <>
+                                                            Take me in <FontAwesomeIcon icon={faAngleRight}/>
+                                                            </>
+                                                        )}
+                                                    </Button>
+                                                    </Col>
+                                                </Row>
+                                            </Container>
                                             </>
-                                        )}
-                                    </Button>
-                                    </Col>
-                                </Row>
-                            </Container>
-                            </>
-                        )
-                        }
-                    </Form>
+                                        )
+                                        }
+                                    </Form>
+                                    </>
+                            )}
                         </div>
                     </Col>
                 </Row>

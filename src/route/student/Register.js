@@ -16,7 +16,6 @@ function Register() {
     const [collegeList,setCollegeList]=useState()
     const [name,setName]=useState()
     const [sex,setSex]=useState()
-    const [password,setPassword]=useState()
     const [email,setEmail]=useState()
 
     const [showForm, setShowForm] = useState(false)
@@ -53,12 +52,6 @@ function Register() {
             setLoading(false)
             return
         }
-        else if(!password)
-        {
-            setError("Please enter your Password")
-            setLoading(false)
-            return
-        }
         else if(!CollegeRef.current.value)
         {
             setError("Please select your College")
@@ -86,9 +79,9 @@ function Register() {
         else
         {
             var collegeId = collegeList.filter(college=>college.displayName === CollegeRef.current.value)
-            register(email,password,name,CollegeRef.current.value,rollRef.current.value,univRollRef.current.value,graduationDateRef.current.value,sex,collegeId[0].id,payloads)
+            register(email,name,CollegeRef.current.value,rollRef.current.value,univRollRef.current.value,graduationDateRef.current.value,sex,collegeId[0].id,payloads)
                         .catch((error)=>{
-                setError(error.message)
+                setError(error)
                 setLoading(false)
             })
         }
@@ -195,10 +188,6 @@ function Register() {
                                     <Form.Check inline label="Female" onClick={()=>{setSex("Female")}} name="group1" type="radio"/>
                                     <Form.Check inline label="Prefer Not to Say" onClick={()=>{setSex("Other")}} name="group1" type="radio"/>
                                     </div>
-                                </Form.Group>
-                                <Form.Group controlId="formBasicPassword" >
-                                    <Form.Label>Password</Form.Label>
-                                    <Form.Control type="password" placeholder="Password" onChange={(e)=>{setPassword(e.target.value)}} required/>
                                 </Form.Group>
                                 <Button variant="primary" className="theme-btn" onClick={()=>{setStep(2)}}>
                                     Next <FontAwesomeIcon icon={faAngleRight}/>

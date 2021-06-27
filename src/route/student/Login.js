@@ -18,7 +18,6 @@ function Login() {
 
     function handleLogin(payload)
     {
-
         setError()     
             login(payload)
             .catch((error)=>{
