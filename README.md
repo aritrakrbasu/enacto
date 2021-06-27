@@ -138,7 +138,48 @@ So no more pricey processes or trip fees, and no more wasted time scouring every
 | [/hr-data-retrieve](https://enacto-app.firebaseapp.com/hr-data-retrieve) | HR Data Retrieval |
 | [/hr-jobs/:jobid](https://enacto-app.firebaseapp.com/hr-jobs/:jobid) | Particular Job Landing Page |
 | [/hr-settings](https://enacto-app.firebaseapp.com/hr-settings) | HR Profile Updation |
-
-----------------------------------------------------------------------------------------------------------------------------------------------------------------------
   
 </div>
+
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+## Tech Stack
+
+```
+ ReactJS
+ Firebase
+ ChartJS
+ Sawo Labs
+ ReactBootstrap
+ ReactFontAwesome
+ Razorpay
+ Coil
+```
+
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+## How to run the project?
+
+</div>
+
+1. Clone the Repo
+   
+   `git clone https://github.com/aritrakrbasu/enacto`
+   
+2. Install Dependencies
+
+   `npm install`
+
+3. Create an account at [Sawo LABS](https://sawolabs.com/)
+
+4. Create new project inside Developer Console
+
+5. Enter the Host Name and enter `localhost` for Development Server
+
+6. Copy generated API Key, replace `API Key inside useEffect Hook` in `{ "src/route/student/Login.js", "src/route/student/Register.js", "src/route/college/College_login.js", "src/route/college/College_registration.js", "src/route/hr/Hrlogin.js", "src/route/hr/HrRegister.js" }`
+
+6. Run the local server
+
+   `npm start`
+
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------
