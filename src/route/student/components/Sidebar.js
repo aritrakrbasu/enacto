@@ -32,6 +32,7 @@ function Sidebar() {
     }, [])
     return (
         <div className="sidebar">
+            <div className="brand-sidebar">Enact to get hired</div>
             <div className="brand-sidebar-verticle">Enacto</div>
             <ul className="sidebar-container">
                 <NavLink activeClassName="selected-nav" to="/dashboard"><li>

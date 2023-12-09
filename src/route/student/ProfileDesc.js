@@ -13,6 +13,7 @@ import './styles/profile.css'
 import './styles/dashboard.css'
 
 import { useParams } from 'react-router'
+import NothingToShow from '../../components/NothingToShow';
 
  function ProfileDesc() {
 
@@ -34,12 +35,22 @@ import { useParams } from 'react-router'
     const [selectedYear,setSelectedYear] = useState()
     const [yearData,setYearData] = useState(null)
 
+    const [noData , setNoData] = useState(false)
+
 
     const fileRef =useRef()
 
     useEffect(()=>{
         var unsubscribe =db.collection("users").doc(profileid).onSnapshot((docs)=>{
+
+          if(docs.exists)
+          {
             setCurrentProfile (docs.data())
+          }else
+          {
+            setNoData(true)
+          }
+            
         })
 
         return unsubscribe
@@ -415,107 +426,119 @@ import { useParams } from 'react-router'
         return unsubscribe
       },[])
      return ( 
-        <Container fluid className="dashboard-body">
-          <Row noGutters>
-            <Col lg={12} className="m-body">
-                <div className="page-header">
-                   Profile
-                </div>
-                <Container className="my4">
-                    <Row>
-                        <Col lg={2}  md={3} xs={6}>
-                            <Image src={dp} fluid roundedCircle />
-                            {profile && profile.isHired ? (<div className="hired-div"><FontAwesomeIcon icon={faUserTie} />   Hired</div>):(<div className="unhired-div"><FontAwesomeIcon icon={faUserTie} /> Available for hire</div>)}
-                        </Col>
-                        <Col>
-                        <div className="award-container profile-container mb2">
-                            <h2>{profile && profile.sex.substring(0,1)}</h2>
-                            <h3>{profile && profile.displayName} <span>#{profile && profile.rollno}</span></h3>
-                            <h4><span> {profile && profile.email}</span></h4>
-                            <h5>University Roll: <span>{profile && profile.universityRoll}</span></h5>
-                            <h5>College: <span>{profile && profile.college}</span></h5>
-                            <h5>Graduation Year <span>{profile && profile.gradDate}</span></h5>
-                            {profile && profile.topicList && profile.topicList.map((topic,key)=>{
-                                return(<span className="profile-tags" key={key}>{topic}</span>)
-                            })}
-                        </div>
+       <>
+       {noData && (
+         <>
+         <NothingToShow />
+         <Link to="/register"><u><b><h3 className="text-center">Register Now</h3></b></u></Link>
+         
+         </>
+       )}
+       {!noData && (
+         <Container fluid className="dashboard-body">
+         <Row noGutters>
+           <Col lg={12} className="m-body">
+               <div className="page-header">
+                  Profile
+               </div>
+               <Container className="my4">
+                   <Row>
+                       <Col lg={2}  md={3} xs={6}>
+                           <Image src={dp} fluid roundedCircle />
+                           {profile && profile.isHired ? (<div className="hired-div"><FontAwesomeIcon icon={faUserTie} />   Hired</div>):(<div className="unhired-div"><FontAwesomeIcon icon={faUserTie} /> Available for hire</div>)}
+                       </Col>
+                       <Col>
+                       <div className="award-container profile-container mb2">
+                           <h2>{profile && profile.sex.substring(0,1)}</h2>
+                           <h3>{profile && profile.displayName} <span>#{profile && profile.rollno}</span></h3>
+                           <h4><span> {profile && profile.email}</span></h4>
+                           <h5>University Roll: <span>{profile && profile.universityRoll}</span></h5>
+                           <h5>College: <span>{profile && profile.college}</span></h5>
+                           <h5>Graduation Year <span>{profile && profile.gradDate}</span></h5>
+                           {profile && profile.topicList && profile.topicList.map((topic,key)=>{
+                               return(<span className="profile-tags" key={key}>{topic}</span>)
+                           })}
+                       </div>
 
-                        <div className="bio-holder">
-                            <h4>Bio </h4>
-                            <p>{profile && profile.bio}</p>
-                        </div>
+                       <div className="bio-holder">
+                           <h4>Bio </h4>
+                           <p>{profile && profile.bio}</p>
+                       </div>
 
-                        <Row>
-                        <Col lg={12} className="stats-container">
-                            <h3>Year chart</h3>
-                            <Form.Label>Year Filter</Form.Label>
-                            <div className="ml-1">
-                                {yearFilters && yearFilters.length>0 && yearFilters.map((year,key)=>{
-                                    return(
-                                    <Button variant="light" className={selectedYear === year?("styled-radio styled-radio-selected mr-2"):("styled-radio mr-3")} key={key} onClick={()=>{setSelectedYear(year)}}>
-                                        {year}
-                                    </Button>
-                                    )
-                                })}
-                            </div>
-                        </Col>
+                       <Row>
+                       <Col lg={12} className="stats-container">
+                           <h3>Year chart</h3>
+                           <Form.Label>Year Filter</Form.Label>
+                           <div className="ml-1">
+                               {yearFilters && yearFilters.length>0 && yearFilters.map((year,key)=>{
+                                   return(
+                                   <Button variant="light" className={selectedYear === year?("styled-radio styled-radio-selected mr-2"):("styled-radio mr-3")} key={key} onClick={()=>{setSelectedYear(year)}}>
+                                       {year}
+                                   </Button>
+                                   )
+                               })}
+                           </div>
+                       </Col>
 
-                        <Col lg={12} className="monthly-chat">
-                            <Bar data={yearData} options={options}/>
-                        </Col>
-                      
+                       <Col lg={12} className="monthly-chat">
+                           <Bar data={yearData} options={options}/>
+                       </Col>
+                     
 
-                        <Col lg={12} className="stats-container">
-                            <h3>Monthly chart</h3>
-                        </Col>
-                        <Col lg={12} className="monthly-chat">
-                        <Bar data={monthlyData} options={options} />
-                        </Col>
+                       <Col lg={12} className="stats-container">
+                           <h3>Monthly chart</h3>
+                       </Col>
+                       <Col lg={12} className="monthly-chat">
+                       <Bar data={monthlyData} options={options} />
+                       </Col>
 
-                        <Col lg={6} className="stats-container">
-                            <h3>Topic Chart</h3>
-                            <div className="pie-chart">
-                              <Pie data={data} options={pieoptions} />
-                            </div>
-                            
-                        </Col>
-                        <Col lg={6} className="stats-container">
-                            <h3>Award/Achievement Chart</h3>
-                            <div className="pie-chart">
-                              <Pie data={awards} options={pieoptions} />
-                            </div>
-                        </Col>
-                    </Row>
+                       <Col lg={6} className="stats-container">
+                           <h3>Topic Chart</h3>
+                           <div className="pie-chart">
+                             <Pie data={data} options={pieoptions} />
+                           </div>
+                           
+                       </Col>
+                       <Col lg={6} className="stats-container">
+                           <h3>Award/Achievement Chart</h3>
+                           <div className="pie-chart">
+                             <Pie data={awards} options={pieoptions} />
+                           </div>
+                       </Col>
+                   </Row>
 
-                        <Tabs defaultActiveKey="awards" id="uncontrolled-tab-example">
-                        <Tab eventKey="awards" title="Awards / Achievements">
-                                {awardsList && awardsList.length>0 && awardsList.map((award)=>{
-                                    return (<div className="post-container">
-                                        <h3>{award.title} <span>#{award.credentialID}</span></h3>
-                                        <p>{award.description}</p>
-                                        <h6>{award.topic}</h6>
-                                        <h5>{award.addedOn.toDate().toString().substring(0,15)}</h5>
-                                    </div>)
-                                })}
-                            </Tab>
-                        <Tab eventKey="posts" title="Activities">
-                                {posts && posts.length>0 && posts.map((post)=>{
-                                    return (<div className="post-container">
-                                        <p>{post.post}</p>
-                                        <h6>{post.topic}</h6>
-                                        <h5>{post.addedOn.toDate().toString().substring(0,15)}</h5>
-                                    </div>)
-                                })}
-                            </Tab>
-                            
-                            
-                            </Tabs>
-                        </Col>
-                    </Row>
-                </Container>
-            </Col>
-            </Row>
-        </Container>
+                       <Tabs defaultActiveKey="awards" id="uncontrolled-tab-example">
+                       <Tab eventKey="awards" title="Awards / Achievements">
+                               {awardsList && awardsList.length>0 && awardsList.map((award)=>{
+                                   return (<div className="post-container">
+                                       <h3>{award.title} <span>#{award.credentialID}</span></h3>
+                                       <p>{award.description}</p>
+                                       <h6>{award.topic}</h6>
+                                       <h5>{award.addedOn.toDate().toString().substring(0,15)}</h5>
+                                   </div>)
+                               })}
+                           </Tab>
+                       <Tab eventKey="posts" title="Activities">
+                               {posts && posts.length>0 && posts.map((post)=>{
+                                   return (<div className="post-container">
+                                       <p>{post.post}</p>
+                                       <h6>{post.topic}</h6>
+                                       <h5>{post.addedOn.toDate().toString().substring(0,15)}</h5>
+                                   </div>)
+                               })}
+                           </Tab>
+                           
+                           
+                           </Tabs>
+                       </Col>
+                   </Row>
+               </Container>
+           </Col>
+           </Row>
+       </Container>
+       )}
+        
+        </>
      )
  }
 
